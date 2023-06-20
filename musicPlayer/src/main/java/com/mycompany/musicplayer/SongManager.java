@@ -20,25 +20,34 @@ public class SongManager {
     
     JFileChooser f;
     private File directory;
-    private ArrayList<Song> workspace = new ArrayList<>(); //list of all songs to work with
-    private ArrayList<Song> display = new ArrayList<>(); //list of displayed files
+    private ArrayList<Song> workspace = new ArrayList<>();
     
-    private void loadFiles(File root){
-        for (final File fileEntry : directory.listFiles()) {
-        if (fileEntry.isDirectory()) {
-            loadFiles(fileEntry);
-        } else {
-            if(!FilenameUtils.getExtension(fileEntry.getName()).equals("flac")){continue;}//only works with flac files for now
-            Song s = new Song(fileEntry);
-            workspace.add(s);
+    private void loadFiles(final File root){
+        for (final File fileEntry : root.listFiles()) {
+            if (fileEntry.isDirectory()) {
+                loadFiles(fileEntry);
+            } else {
+                if(!FilenameUtils.getExtension(fileEntry.getName()).equals("flac")){continue;}//only works with flac files for now
+                Song s = new Song(fileEntry);
+                workspace.add(s);
+            }
         }
-    }
+        System.out.println(workspace);
     }
     
     public void setDirectory(Component parent){
         f.showOpenDialog(null);
         directory = f.getSelectedFile();
+        loadFiles(directory);
         System.out.println(f.getSelectedFile());
+    }
+    
+    public ArrayList<Song> getWorkspace(){
+        return workspace;
+    }
+    
+    public void playSong(Song s){
+        //play the song
     }
     
     public SongManager(){

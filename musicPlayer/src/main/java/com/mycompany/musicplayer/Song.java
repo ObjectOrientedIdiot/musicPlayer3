@@ -5,7 +5,6 @@
 package com.mycompany.musicplayer;
 
 import java.io.File;
-import org.jaudiotagger.audio.AudioFile;
 
 /**
  *
@@ -14,21 +13,20 @@ import org.jaudiotagger.audio.AudioFile;
 public class Song {
     
     protected File filePath;
-    protected String fileType;
-    protected String title;
-    protected String[] artists;
-    protected String genre;
-    protected String album;
-    protected int duration;
-    protected int bitDepth;
-    protected int sampleRate;
+    protected String name;
     
     public Song(File filePath){
         this.filePath = filePath;
+        this.name = filePath.getName();
+        
     }
     
     public File getFile(){
         return filePath;
+    }
+    
+    public String toString(){
+        return name;
     }
     
 }

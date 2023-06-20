@@ -11,11 +11,6 @@
             <version>2.5</version>
             <type>jar</type>
         </dependency>
-        <dependency>
-            <groupId>net.jthink</groupId>
-            <artifactId>jaudiotagger</artifactId>
-            <version>3.0.1</version>
-        </dependency>
     </dependencies>
     
 
