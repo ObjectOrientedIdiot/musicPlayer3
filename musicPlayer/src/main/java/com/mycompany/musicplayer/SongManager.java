@@ -5,10 +5,12 @@
 package com.mycompany.musicplayer;
 
 import java.awt.Component;
+import java.io.File;
 import java.io.InputStream;
 import java.nio.file.*;
 import java.util.ArrayList;
 import javax.swing.JFileChooser;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  *
@@ -17,12 +19,25 @@ import javax.swing.JFileChooser;
 public class SongManager {
     
     JFileChooser f;
-    private Path directory;
+    private File directory;
     private ArrayList<Song> workspace = new ArrayList<>(); //list of all songs to work with
     private ArrayList<Song> display = new ArrayList<>(); //list of displayed files
     
+    private void loadFiles(File root){
+        for (final File fileEntry : directory.listFiles()) {
+        if (fileEntry.isDirectory()) {
+            loadFiles(fileEntry);
+        } else {
+            if(!FilenameUtils.getExtension(fileEntry.getName()).equals("flac")){continue;}//only works with flac files for now
+            Song s = new Song(fileEntry);
+            workspace.add(s);
+        }
+    }
+    }
+    
     public void setDirectory(Component parent){
         f.showOpenDialog(null);
+        directory = f.getSelectedFile();
         System.out.println(f.getSelectedFile());
     }
     
