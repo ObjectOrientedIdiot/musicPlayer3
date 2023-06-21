@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+import javax.swing.DefaultComboBoxModel;
 
 /**
  *
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 public class Frame extends javax.swing.JFrame {
     
     SongManager smInstance;
-    
+    Song selected;
     /**
      * Creates new form Frame
      */
@@ -33,7 +34,20 @@ public class Frame extends javax.swing.JFrame {
      */
     
     private void drawSongButtons(){
+        String[] songNames = smInstance.getWorkspace().stream()
+                .map(Song::toString)
+                .toArray(String[]::new);
         
+        mList.setModel(new DefaultComboBoxModel<>(songNames));
+    }
+    
+    private void drawSongButtons(String search){
+        String[] songNames = smInstance.getWorkspace().stream()
+                .map(Song::toString)
+                .filter(s->s.contains(search))
+                .toArray(String[]::new);
+        
+        mList.setModel(new DefaultComboBoxModel<>(songNames));
     }
     
     @SuppressWarnings("unchecked")
@@ -45,7 +59,8 @@ public class Frame extends javax.swing.JFrame {
         rDuration = new javax.swing.JProgressBar();
         mFrame = new javax.swing.JPanel();
         mSearch = new javax.swing.JTextField();
-        mList = new javax.swing.JScrollPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        mList = new javax.swing.JList<>();
         topMenu = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         setFile = new javax.swing.JMenuItem();
@@ -92,18 +107,43 @@ public class Frame extends javax.swing.JFrame {
         mFrame.setBackground(new java.awt.Color(255, 255, 255));
         mFrame.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
+        mSearch.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                mSearchInputMethodTextChanged(evt);
+            }
+        });
         mSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mSearchActionPerformed(evt);
+            }
+        });
+        mSearch.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                mSearchPropertyChange(evt);
             }
         });
         mSearch.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 mSearchKeyReleased(evt);
             }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                mSearchKeyTyped(evt);
+            }
         });
 
-        mList.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        mList.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "set your music directory to get started (Ctrl+O)" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        mList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                mListValueChanged(evt);
+            }
+        });
+        jScrollPane1.setViewportView(mList);
 
         javax.swing.GroupLayout mFrameLayout = new javax.swing.GroupLayout(mFrame);
         mFrame.setLayout(mFrameLayout);
@@ -112,8 +152,8 @@ public class Frame extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mFrameLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(mFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(mList, javax.swing.GroupLayout.PREFERRED_SIZE, 372, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mSearch))
+                    .addComponent(jScrollPane1)
+                    .addComponent(mSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE))
                 .addContainerGap())
         );
         mFrameLayout.setVerticalGroup(
@@ -122,7 +162,7 @@ public class Frame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(mSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mList, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -193,17 +233,12 @@ public class Frame extends javax.swing.JFrame {
 
     private void setFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setFileActionPerformed
         smInstance.setDirectory(jMenu1);
-        
+        drawSongButtons();
     }//GEN-LAST:event_setFileActionPerformed
 
     private void playPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playPauseActionPerformed
-        InputStream in;
-        try {
-            
-        }
-        catch(Exception e) {
-            
-        }
+        System.out.println(selected);
+        smInstance.playSong(selected);
     }//GEN-LAST:event_playPauseActionPerformed
 
     private void rVolumeMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rVolumeMouseReleased
@@ -211,19 +246,30 @@ public class Frame extends javax.swing.JFrame {
     }//GEN-LAST:event_rVolumeMouseReleased
 
     private void mSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mSearchKeyReleased
-        if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            ArrayList<Song> displaySongsFromSearch = smInstance.getWorkspace().stream()
-                    .filter(x->x.toString()
-                    .contains(mSearch.getText()))
-                    .collect(Collectors.toCollection(ArrayList::new));
-        }
+        
     }//GEN-LAST:event_mSearchKeyReleased
 
     private void playPauseKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_playPauseKeyReleased
         if(evt.getKeyCode() == KeyEvent.VK_SPACE) {
-            smInstance.playSong(smInstance.getWorkspace().get(0/*placeholder*/));
+            
         }
     }//GEN-LAST:event_playPauseKeyReleased
+
+    private void mListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_mListValueChanged
+        selected = smInstance.getSongFromName(mList.getSelectedValue());
+    }//GEN-LAST:event_mListValueChanged
+
+    private void mSearchKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mSearchKeyTyped
+        drawSongButtons(mSearch.getText());
+    }//GEN-LAST:event_mSearchKeyTyped
+
+    private void mSearchPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_mSearchPropertyChange
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mSearchPropertyChange
+
+    private void mSearchInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_mSearchInputMethodTextChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mSearchInputMethodTextChanged
 
     /**
      * @param args the command line arguments
@@ -264,8 +310,9 @@ public class Frame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel mFrame;
-    private javax.swing.JScrollPane mList;
+    private javax.swing.JList<String> mList;
     private javax.swing.JTextField mSearch;
     private javax.swing.JMenuItem playPause;
     private javax.swing.JProgressBar rDuration;

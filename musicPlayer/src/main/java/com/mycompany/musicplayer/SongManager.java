@@ -6,14 +6,20 @@ package com.mycompany.musicplayer;
 
 import java.awt.Component;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.*;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JFileChooser;
 import org.apache.commons.io.FilenameUtils;
 
@@ -35,7 +41,7 @@ public class SongManager {
             if (fileEntry.isDirectory()) {
                 loadFiles(fileEntry);
             } else {
-                if(!FilenameUtils.getExtension(fileEntry.getName()).equals("wav")){continue;}//only works with flac files for now. No:)
+                if(!FilenameUtils.getExtension(fileEntry.getName()).equals("wav")){continue;}// No:)
                 Song s = new Song(fileEntry);
                 workspace.add(s);
             }
@@ -54,9 +60,17 @@ public class SongManager {
         return workspace;
     }
     
+    public Song getSongFromName(String name){
+        for(Song s: workspace){
+            if(s.toString().equals(name)){
+                return s;
+            }
+        }
+        return null;
+    }
+    
     public void playSong(Song s){ //play the song
-        URL soundURL = getClass().getResource(s.toString());
-        setFile(soundURL);
+        setFile(s.getFile());
         play();
     }
     
@@ -66,9 +80,9 @@ public class SongManager {
         
     }
     
-    public void setFile(URL url) {
+    public void setFile(File file) {
         try {
-            AudioInputStream sound = AudioSystem.getAudioInputStream(url);
+            AudioInputStream sound = AudioSystem.getAudioInputStream(file);
             clip = AudioSystem.getClip();
             clip.open(sound);
             fc = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
