@@ -4,7 +4,10 @@
  */
 package com.mycompany.musicplayer;
 
+import java.awt.event.KeyEvent;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -19,6 +22,7 @@ public class Frame extends javax.swing.JFrame {
      */
     public Frame() {
         initComponents();
+        setLocationRelativeTo(null);
         smInstance = new SongManager();
     }
 
@@ -55,6 +59,15 @@ public class Frame extends javax.swing.JFrame {
         rFrame.setBackground(new java.awt.Color(255, 255, 255));
         rFrame.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
+        rVolume.setMaximum(6);
+        rVolume.setMinimum(-80);
+        rVolume.setValue(-37);
+        rVolume.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                rVolumeMouseReleased(evt);
+            }
+        });
+
         javax.swing.GroupLayout rFrameLayout = new javax.swing.GroupLayout(rFrame);
         rFrame.setLayout(rFrameLayout);
         rFrameLayout.setHorizontalGroup(
@@ -82,6 +95,11 @@ public class Frame extends javax.swing.JFrame {
         mSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mSearchActionPerformed(evt);
+            }
+        });
+        mSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                mSearchKeyReleased(evt);
             }
         });
 
@@ -134,6 +152,11 @@ public class Frame extends javax.swing.JFrame {
                 playPauseActionPerformed(evt);
             }
         });
+        playPause.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                playPauseKeyReleased(evt);
+            }
+        });
         jMenu2.add(playPause);
 
         topMenu.add(jMenu2);
@@ -182,6 +205,25 @@ public class Frame extends javax.swing.JFrame {
             
         }
     }//GEN-LAST:event_playPauseActionPerformed
+
+    private void rVolumeMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rVolumeMouseReleased
+        smInstance.setVolume(rVolume.getValue());
+    }//GEN-LAST:event_rVolumeMouseReleased
+
+    private void mSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mSearchKeyReleased
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            ArrayList<Song> displaySongsFromSearch = smInstance.getWorkspace().stream()
+                    .filter(x->x.toString()
+                    .contains(mSearch.getText()))
+                    .collect(Collectors.toCollection(ArrayList::new));
+        }
+    }//GEN-LAST:event_mSearchKeyReleased
+
+    private void playPauseKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_playPauseKeyReleased
+        if(evt.getKeyCode() == KeyEvent.VK_SPACE) {
+            smInstance.playSong(smInstance.getWorkspace().get(0/*placeholder*/));
+        }
+    }//GEN-LAST:event_playPauseKeyReleased
 
     /**
      * @param args the command line arguments
