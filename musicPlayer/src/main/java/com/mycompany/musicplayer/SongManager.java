@@ -6,20 +6,11 @@ package com.mycompany.musicplayer;
 
 import java.awt.Component;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.*;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JFileChooser;
 import org.apache.commons.io.FilenameUtils;
 
@@ -57,17 +48,22 @@ public class SongManager {
         System.out.println(f.getSelectedFile());
     }
     
+    public void refresh(){
+        loadFiles(directory);
+    }
+    
     public ArrayList<Song> getWorkspace(){
         return workspace;
     }
     
     public Song getSongFromName(String name){
         for(Song s: workspace){
-            if(s.toString().equals(name)){
+            if(s.getFile().getName().equals(name)){
                 return s;
             }
         }
-        return null;
+        System.out.println(workspace);
+        return (null);
     }
     
     public void playSong(Song s){ //play the song
@@ -92,18 +88,15 @@ public class SongManager {
             fc = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
         }
         catch(Exception e) {
-            System.out.println("can't find file bruh");
+            e.printStackTrace(System.out);
         }
     }
     public void play() {
-            clip.setFramePosition(0);
-            clip.start();
-            fc.setValue(currentVolume);
-        }
-    
-    public boolean clipReady(){
-        return !(clip==null);
+        clip.setFramePosition(0);
+        clip.start();
+        fc.setValue(currentVolume);
     }
+
     
     public void pauseOrResume() {
         try {
@@ -134,6 +127,10 @@ public class SongManager {
     
     public void setDuration(int value) {
         clip.setFramePosition(value);
+    }
+
+    public boolean clipReady(){
+        return !(clip == null);
     }
     
 }

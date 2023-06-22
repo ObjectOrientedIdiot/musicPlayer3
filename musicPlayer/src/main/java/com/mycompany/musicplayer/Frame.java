@@ -5,9 +5,6 @@
 package com.mycompany.musicplayer;
 
 import java.awt.event.KeyEvent;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
 import javax.swing.DefaultComboBoxModel;
 
 /**
@@ -18,7 +15,6 @@ public class Frame extends javax.swing.JFrame {
     
     SongManager smInstance;
     Song selected;
-    boolean mListEnabled = true;
     RTUpdater rtU;
     /**
      * Creates new form Frame
@@ -48,7 +44,7 @@ public class Frame extends javax.swing.JFrame {
     private void drawSongButtons(String search){
         String[] songNames = smInstance.getWorkspace().stream()
                 .map(Song::toString)
-                .filter(s->s.contains(search))
+                .filter(s->s.toLowerCase().contains(search.toLowerCase()))
                 .toArray(String[]::new);
         
         mList.setModel(new DefaultComboBoxModel<>(songNames));
@@ -66,10 +62,10 @@ public class Frame extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         mList = new javax.swing.JList<>();
         topMenu = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        jFileOptions = new javax.swing.JMenu();
         setFile = new javax.swing.JMenuItem();
         refreshFile = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        jPlaybackOptions = new javax.swing.JMenu();
         playPause = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -121,9 +117,17 @@ public class Frame extends javax.swing.JFrame {
         mFrame.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         mSearch.setText("Search Here");
+        mSearch.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                mSearchFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                mSearchFocusLost(evt);
+            }
+        });
         mSearch.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                mSearchKeyPressed(evt);
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                mSearchKeyReleased(evt);
             }
         });
 
@@ -132,14 +136,14 @@ public class Frame extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        mList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mListMouseClicked(evt);
+            }
+        });
         mList.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 mListKeyReleased(evt);
-            }
-        });
-        mList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                mListValueChanged(evt);
             }
         });
         jScrollPane1.setViewportView(mList);
@@ -165,7 +169,7 @@ public class Frame extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jMenu1.setText("File");
+        jFileOptions.setText("File");
 
         setFile.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         setFile.setText("Set File Path");
@@ -174,18 +178,23 @@ public class Frame extends javax.swing.JFrame {
                 setFileActionPerformed(evt);
             }
         });
-        jMenu1.add(setFile);
+        jFileOptions.add(setFile);
 
         refreshFile.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         refreshFile.setText("Refresh");
-        jMenu1.add(refreshFile);
+        refreshFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                refreshFileActionPerformed(evt);
+            }
+        });
+        jFileOptions.add(refreshFile);
 
-        topMenu.add(jMenu1);
+        topMenu.add(jFileOptions);
 
-        jMenu2.setText("Playback");
-        jMenu2.addMouseListener(new java.awt.event.MouseAdapter() {
+        jPlaybackOptions.setText("Playback");
+        jPlaybackOptions.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jMenu2MouseClicked(evt);
+                jPlaybackOptionsMouseClicked(evt);
             }
         });
 
@@ -196,9 +205,9 @@ public class Frame extends javax.swing.JFrame {
                 playPauseActionPerformed(evt);
             }
         });
-        jMenu2.add(playPause);
+        jPlaybackOptions.add(playPause);
 
-        topMenu.add(jMenu2);
+        topMenu.add(jPlaybackOptions);
 
         setJMenuBar(topMenu);
 
@@ -227,13 +236,12 @@ public class Frame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void setFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setFileActionPerformed
-        smInstance.setDirectory(jMenu1);
+        smInstance.setDirectory(jFileOptions);
         drawSongButtons();
     }//GEN-LAST:event_setFileActionPerformed
 
     private void playPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playPauseActionPerformed
         smInstance.pauseOrResume(); ///FIX THIS. IT RUNS TWICE WHEN YOU HAVE BOTH mLIST AND playPause SELECTED
-        mListEnabled = true;
     }//GEN-LAST:event_playPauseActionPerformed
 
     private void rVolumeMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rVolumeMouseReleased
@@ -245,7 +253,23 @@ public class Frame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_rVolumeMouseReleased
 
-    private void mListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_mListValueChanged
+    private void mListKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mListKeyReleased
+        if(evt.getKeyCode() == KeyEvent.VK_SPACE ) {
+            smInstance.pauseOrResume();
+        }
+    }//GEN-LAST:event_mListKeyReleased
+
+    private void jPlaybackOptionsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPlaybackOptionsMouseClicked
+
+    }//GEN-LAST:event_jPlaybackOptionsMouseClicked
+
+    private void rDurationSliderMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rDurationSliderMouseReleased
+        if(selected != null) {
+            smInstance.setDuration(rDurationSlider.getValue());
+        }
+    }//GEN-LAST:event_rDurationSliderMouseReleased
+
+    private void mListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mListMouseClicked
         try {
             selected = smInstance.getSongFromName(mList.getSelectedValue());
             System.out.println(selected);
@@ -254,32 +278,25 @@ public class Frame extends javax.swing.JFrame {
             rDurationSlider.setValue(0);
         }
         catch(Exception e) {
-            System.out.println("Not a Song!");
+            e.printStackTrace(System.out);
         }
-    }//GEN-LAST:event_mListValueChanged
+    }//GEN-LAST:event_mListMouseClicked
 
-    private void mListKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mListKeyReleased
-        if(evt.getKeyCode() == KeyEvent.VK_SPACE && mListEnabled == true) {
-            smInstance.pauseOrResume();
-        }
-    }//GEN-LAST:event_mListKeyReleased
+    private void mSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mSearchKeyReleased
+        drawSongButtons(mSearch.getText());
+    }//GEN-LAST:event_mSearchKeyReleased
 
-    private void jMenu2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu2MouseClicked
-        mListEnabled = false;
-    }//GEN-LAST:event_jMenu2MouseClicked
+    private void mSearchFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mSearchFocusGained
+        mSearch.setText("");
+    }//GEN-LAST:event_mSearchFocusGained
 
-    private void rDurationSliderMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rDurationSliderMouseReleased
-        if(selected != null) {
-            smInstance.setDuration(rDurationSlider.getValue());
-        }
-    }//GEN-LAST:event_rDurationSliderMouseReleased
+    private void mSearchFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mSearchFocusLost
+        mSearch.setText("Search Here");
+    }//GEN-LAST:event_mSearchFocusLost
 
-    private void mSearchKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mSearchKeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            drawSongButtons(mSearch.getText());
-            System.out.println("Works");
-        }
-    }//GEN-LAST:event_mSearchKeyPressed
+    private void refreshFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshFileActionPerformed
+        smInstance.refresh();
+    }//GEN-LAST:event_refreshFileActionPerformed
 
     /**
      * @param args the command line arguments
@@ -318,8 +335,8 @@ public class Frame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jFileOptions;
+    private javax.swing.JMenu jPlaybackOptions;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel mFrame;
     private javax.swing.JList<String> mList;
