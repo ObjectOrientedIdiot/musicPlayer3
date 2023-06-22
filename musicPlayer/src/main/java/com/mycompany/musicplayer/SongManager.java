@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.mycompany.musicplayer;
 
 import java.awt.Component;
@@ -14,10 +11,6 @@ import javax.sound.sampled.FloatControl;
 import javax.swing.JFileChooser;
 import org.apache.commons.io.FilenameUtils;
 
-/**
- *
- * @author 1104691
- */
 public class SongManager {
     
     JFileChooser f;
@@ -80,7 +73,7 @@ public class SongManager {
         
     }
     
-    public void setFile(File file) {
+    public void setFile(File file) { //Sets the file to the controller
         try {
             AudioInputStream sound = AudioSystem.getAudioInputStream(file);
             clip = AudioSystem.getClip();
@@ -91,14 +84,14 @@ public class SongManager {
             e.printStackTrace(System.out);
         }
     }
-    public void play() {
+    public void play() { //Plays the song
         clip.setFramePosition(0);
         clip.start();
         fc.setValue(currentVolume);
     }
 
     
-    public void pauseOrResume() {
+    public void pauseOrResume() { //Pauses or resumes the song
         try {
             if(paused == false) {
                 clip.stop();
@@ -114,18 +107,18 @@ public class SongManager {
         }
     }
     
-    public void setVolume(float volume) {
+    public void setVolume(float volume) { //Sets the song's volume to the given value
         currentVolume = volume;
         fc.setValue(currentVolume);
     }
     
-    public double getDuration() {
+    public double getDuration() { //Returns the song's current duration
         return clip.getFramePosition();
     }
     
     
     
-    public void setDuration(int value) {
+    public void setDuration(int value) { //Sets the song duration to the given value
         clip.setFramePosition(value);
     }
 

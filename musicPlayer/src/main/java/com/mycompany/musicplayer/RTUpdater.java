@@ -1,17 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.mycompany.musicplayer;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JSlider;
 
-/**
- *
- * @author thesi
- */
 public class RTUpdater extends Thread {
     
     JSlider cInstance; //component being updated
@@ -23,7 +16,7 @@ public class RTUpdater extends Thread {
     }
     
     @Override
-    public void run(){
+    public void run(){ //Updates the song's duration every second
         while(true){
             try {
                 Thread.sleep(1000);
