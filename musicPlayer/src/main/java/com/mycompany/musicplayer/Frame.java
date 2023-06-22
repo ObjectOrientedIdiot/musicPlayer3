@@ -18,6 +18,7 @@ public class Frame extends javax.swing.JFrame {
     
     SongManager smInstance;
     Song selected;
+    boolean mListEnabled = true;
     /**
      * Creates new form Frame
      */
@@ -57,6 +58,7 @@ public class Frame extends javax.swing.JFrame {
         rFrame = new javax.swing.JPanel();
         rVolume = new javax.swing.JSlider();
         rDuration = new javax.swing.JProgressBar();
+        rDurationSlider = new javax.swing.JSlider();
         mFrame = new javax.swing.JPanel();
         mSearch = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -83,13 +85,22 @@ public class Frame extends javax.swing.JFrame {
             }
         });
 
+        rDurationSlider.setValue(0);
+        rDurationSlider.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                rDurationSliderMouseReleased(evt);
+            }
+        });
+
         javax.swing.GroupLayout rFrameLayout = new javax.swing.GroupLayout(rFrame);
         rFrame.setLayout(rFrameLayout);
         rFrameLayout.setHorizontalGroup(
             rFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, rFrameLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(rDuration, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(rFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(rDuration, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(rDurationSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(rVolume, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -98,10 +109,15 @@ public class Frame extends javax.swing.JFrame {
             rFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(rFrameLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(rFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(rDuration, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(rVolume, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                .addGroup(rFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(rFrameLayout.createSequentialGroup()
+                        .addComponent(rVolume, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18))
+                    .addGroup(rFrameLayout.createSequentialGroup()
+                        .addComponent(rDuration, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(rDurationSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
 
         mFrame.setBackground(new java.awt.Color(255, 255, 255));
@@ -125,9 +141,6 @@ public class Frame extends javax.swing.JFrame {
             }
         });
         mSearch.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                mSearchKeyReleased(evt);
-            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 mSearchKeyTyped(evt);
             }
@@ -137,6 +150,11 @@ public class Frame extends javax.swing.JFrame {
             String[] strings = { "set your music directory to get started (Ctrl+O)" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
+        });
+        mList.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                mListKeyReleased(evt);
+            }
         });
         mList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
@@ -184,17 +202,17 @@ public class Frame extends javax.swing.JFrame {
         topMenu.add(jMenu1);
 
         jMenu2.setText("Playback");
+        jMenu2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenu2MouseClicked(evt);
+            }
+        });
 
         playPause.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SPACE, 0));
         playPause.setText("Play/Pause");
         playPause.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 playPauseActionPerformed(evt);
-            }
-        });
-        playPause.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                playPauseKeyReleased(evt);
             }
         });
         jMenu2.add(playPause);
@@ -237,26 +255,31 @@ public class Frame extends javax.swing.JFrame {
     }//GEN-LAST:event_setFileActionPerformed
 
     private void playPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playPauseActionPerformed
-        System.out.println(selected);
-        smInstance.playSong(selected);
+        smInstance.pauseOrResume(); ///FIX THIS. IT RUNS TWICE WHEN YOU HAVE BOTH mLIST AND playPause SELECTED
+        mListEnabled = true;
     }//GEN-LAST:event_playPauseActionPerformed
 
     private void rVolumeMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rVolumeMouseReleased
-        smInstance.setVolume(rVolume.getValue());
+        try {
+            smInstance.setVolume(rVolume.getValue());
+        }
+        catch(Exception e) {
+            System.out.println("No Song Selected!");
+        }
     }//GEN-LAST:event_rVolumeMouseReleased
 
-    private void mSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mSearchKeyReleased
-        
-    }//GEN-LAST:event_mSearchKeyReleased
-
-    private void playPauseKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_playPauseKeyReleased
-        if(evt.getKeyCode() == KeyEvent.VK_SPACE) {
-            
-        }
-    }//GEN-LAST:event_playPauseKeyReleased
-
     private void mListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_mListValueChanged
-        selected = smInstance.getSongFromName(mList.getSelectedValue());
+        try {
+            selected = smInstance.getSongFromName(mList.getSelectedValue());
+            System.out.println(selected);
+            smInstance.playSong(selected);
+            rDurationSlider.setMaximum(smInstance.clip.getFrameLength());
+            rDurationSlider.setValue(0);
+            rDuration.setValue(0);
+        }
+        catch(Exception e) {
+            System.out.println("Not a Song!");
+        }
     }//GEN-LAST:event_mListValueChanged
 
     private void mSearchKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mSearchKeyTyped
@@ -270,6 +293,25 @@ public class Frame extends javax.swing.JFrame {
     private void mSearchInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_mSearchInputMethodTextChanged
         // TODO add your handling code here:
     }//GEN-LAST:event_mSearchInputMethodTextChanged
+
+    private void mListKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mListKeyReleased
+        if(evt.getKeyCode() == KeyEvent.VK_SPACE && mListEnabled == true) {
+            smInstance.pauseOrResume();
+        }
+    }//GEN-LAST:event_mListKeyReleased
+
+    private void jMenu2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu2MouseClicked
+        mListEnabled = false;
+    }//GEN-LAST:event_jMenu2MouseClicked
+
+    private void rDurationSliderMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rDurationSliderMouseReleased
+        //rDurationSlider.setValue(smInstance.clip.getFramePosition());***IMPORTANT!!! ADD THIS TO THE TIMER THAT WILL UPDATE PROGRESS BAR
+        //rDuration.setValue((int)smInstance.getDuration());***ADD THIS TOO
+        if(selected != null) {
+            smInstance.setDuration(rDurationSlider.getValue());
+            rDuration.setValue((int)smInstance.getDuration());
+        }
+    }//GEN-LAST:event_rDurationSliderMouseReleased
 
     /**
      * @param args the command line arguments
@@ -297,7 +339,7 @@ public class Frame extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Frame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -316,6 +358,7 @@ public class Frame extends javax.swing.JFrame {
     private javax.swing.JTextField mSearch;
     private javax.swing.JMenuItem playPause;
     private javax.swing.JProgressBar rDuration;
+    private javax.swing.JSlider rDurationSlider;
     private javax.swing.JPanel rFrame;
     private javax.swing.JSlider rVolume;
     private javax.swing.JMenuItem refreshFile;
