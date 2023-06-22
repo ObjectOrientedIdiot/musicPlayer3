@@ -121,26 +121,9 @@ public class Frame extends javax.swing.JFrame {
         mFrame.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         mSearch.setText("Search Here");
-        mSearch.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-                mSearchInputMethodTextChanged(evt);
-            }
-        });
-        mSearch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mSearchActionPerformed(evt);
-            }
-        });
-        mSearch.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                mSearchPropertyChange(evt);
-            }
-        });
         mSearch.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                mSearchKeyTyped(evt);
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                mSearchKeyPressed(evt);
             }
         });
 
@@ -243,10 +226,6 @@ public class Frame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void mSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mSearchActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_mSearchActionPerformed
-
     private void setFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setFileActionPerformed
         smInstance.setDirectory(jMenu1);
         drawSongButtons();
@@ -279,18 +258,6 @@ public class Frame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_mListValueChanged
 
-    private void mSearchKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mSearchKeyTyped
-        drawSongButtons(mSearch.getText());
-    }//GEN-LAST:event_mSearchKeyTyped
-
-    private void mSearchPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_mSearchPropertyChange
-        // TODO add your handling code here:
-    }//GEN-LAST:event_mSearchPropertyChange
-
-    private void mSearchInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_mSearchInputMethodTextChanged
-        // TODO add your handling code here:
-    }//GEN-LAST:event_mSearchInputMethodTextChanged
-
     private void mListKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mListKeyReleased
         if(evt.getKeyCode() == KeyEvent.VK_SPACE && mListEnabled == true) {
             smInstance.pauseOrResume();
@@ -302,12 +269,17 @@ public class Frame extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenu2MouseClicked
 
     private void rDurationSliderMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rDurationSliderMouseReleased
-        //rDurationSlider.setValue(smInstance.clip.getFramePosition());***IMPORTANT!!! ADD THIS TO THE TIMER THAT WILL UPDATE PROGRESS BAR
-        //rDuration.setValue((int)smInstance.getDuration());***ADD THIS TOO
         if(selected != null) {
             smInstance.setDuration(rDurationSlider.getValue());
         }
     }//GEN-LAST:event_rDurationSliderMouseReleased
+
+    private void mSearchKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mSearchKeyPressed
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            drawSongButtons(mSearch.getText());
+            System.out.println("Works");
+        }
+    }//GEN-LAST:event_mSearchKeyPressed
 
     /**
      * @param args the command line arguments
