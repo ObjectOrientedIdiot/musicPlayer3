@@ -116,7 +116,9 @@ public class SongManager {
         return clip.getFramePosition();
     }
     
-    
+    public double getMaxDuration() { //Returns the song's maximum duration
+        return clip.getFrameLength();
+    }
     
     public void setDuration(int value) { //Sets the song duration to the given value
         clip.setFramePosition(value);

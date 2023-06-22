@@ -36,7 +36,7 @@ public class Frame extends javax.swing.JFrame {
         
         mList.setModel(new DefaultComboBoxModel<>(songNames));
     }
-    
+       
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -252,7 +252,7 @@ public class Frame extends javax.swing.JFrame {
             selected = smInstance.getSongFromName(mList.getSelectedValue());
             System.out.println(selected);
             smInstance.playSong(selected);
-            rDurationSlider.setMaximum(smInstance.clip.getFrameLength());
+            rDurationSlider.setMaximum((int)smInstance.getMaxDuration());
             rDurationSlider.setValue(0);
         }
         catch(Exception e) {

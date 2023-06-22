@@ -9,6 +9,7 @@ public class RTUpdater extends Thread {
     
     JSlider cInstance; //component being updated
     SongManager smInstance;
+    Song selected;
     
     public RTUpdater(JSlider c, SongManager sm){
         this.cInstance = c;
@@ -26,6 +27,11 @@ public class RTUpdater extends Thread {
             if(!smInstance.clipReady()){continue;}
             cInstance.setValue((int)smInstance.getDuration());
             System.out.println(""+(int)smInstance.getDuration());
+            
+            if((int)smInstance.getDuration() == (int)smInstance.getMaxDuration()) {
+                selected = smInstance.getWorkspace().get(smInstance.getWorkspace().indexOf(selected) + 1);
+                System.out.println("working");
+            }
         }
     }
     
