@@ -19,6 +19,7 @@ public class Frame extends javax.swing.JFrame {
     SongManager smInstance;
     Song selected;
     boolean mListEnabled = true;
+    RTUpdater rtU;
     /**
      * Creates new form Frame
      */
@@ -26,6 +27,8 @@ public class Frame extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         smInstance = new SongManager();
+        rtU = new RTUpdater(rDurationSlider,smInstance);
+        rtU.start();
     }
 
     /**
@@ -57,7 +60,6 @@ public class Frame extends javax.swing.JFrame {
 
         rFrame = new javax.swing.JPanel();
         rVolume = new javax.swing.JSlider();
-        rDuration = new javax.swing.JProgressBar();
         rDurationSlider = new javax.swing.JSlider();
         mFrame = new javax.swing.JPanel();
         mSearch = new javax.swing.JTextField();
@@ -97,10 +99,8 @@ public class Frame extends javax.swing.JFrame {
         rFrameLayout.setHorizontalGroup(
             rFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, rFrameLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(rFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(rDuration, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(rDurationSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE))
+                .addContainerGap(15, Short.MAX_VALUE)
+                .addComponent(rDurationSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(rVolume, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -108,21 +108,19 @@ public class Frame extends javax.swing.JFrame {
         rFrameLayout.setVerticalGroup(
             rFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(rFrameLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(rFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(rFrameLayout.createSequentialGroup()
-                        .addComponent(rVolume, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18))
-                    .addGroup(rFrameLayout.createSequentialGroup()
-                        .addComponent(rDuration, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(rDurationSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                .addContainerGap()
+                .addGroup(rFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(rDurationSlider, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, rFrameLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(rVolume, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
 
         mFrame.setBackground(new java.awt.Color(255, 255, 255));
         mFrame.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
+        mSearch.setText("Search Here");
         mSearch.addInputMethodListener(new java.awt.event.InputMethodListener() {
             public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
             }
@@ -275,7 +273,6 @@ public class Frame extends javax.swing.JFrame {
             smInstance.playSong(selected);
             rDurationSlider.setMaximum(smInstance.clip.getFrameLength());
             rDurationSlider.setValue(0);
-            rDuration.setValue(0);
         }
         catch(Exception e) {
             System.out.println("Not a Song!");
@@ -309,7 +306,6 @@ public class Frame extends javax.swing.JFrame {
         //rDuration.setValue((int)smInstance.getDuration());***ADD THIS TOO
         if(selected != null) {
             smInstance.setDuration(rDurationSlider.getValue());
-            rDuration.setValue((int)smInstance.getDuration());
         }
     }//GEN-LAST:event_rDurationSliderMouseReleased
 
@@ -357,7 +353,6 @@ public class Frame extends javax.swing.JFrame {
     private javax.swing.JList<String> mList;
     private javax.swing.JTextField mSearch;
     private javax.swing.JMenuItem playPause;
-    private javax.swing.JProgressBar rDuration;
     private javax.swing.JSlider rDurationSlider;
     private javax.swing.JPanel rFrame;
     private javax.swing.JSlider rVolume;

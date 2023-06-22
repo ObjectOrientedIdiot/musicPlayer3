@@ -32,7 +32,7 @@ public class SongManager {
     JFileChooser f;
     private File directory;
     private ArrayList<Song> workspace = new ArrayList<>();
-    public float currentVolume = -37;
+    private float currentVolume = -37;
     boolean paused = false;
     Clip clip;
     FloatControl fc;
@@ -101,6 +101,10 @@ public class SongManager {
             fc.setValue(currentVolume);
         }
     
+    public boolean clipReady(){
+        return !(clip==null);
+    }
+    
     public void pauseOrResume() {
         try {
             if(paused == false) {
@@ -123,10 +127,10 @@ public class SongManager {
     }
     
     public double getDuration() {
-        double duration = ((double)clip.getFramePosition()/clip.getFrameLength())*100;
-        System.out.println(duration);
-        return duration;
+        return clip.getFramePosition();
     }
+    
+    
     
     public void setDuration(int value) {
         clip.setFramePosition(value);
