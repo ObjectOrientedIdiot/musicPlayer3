@@ -3,17 +3,20 @@ package com.mycompany.musicplayer;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JList;
 import javax.swing.JSlider;
 
 public class RTUpdater extends Thread {
     
-    JSlider cInstance; //component being updated
-    SongManager smInstance;
-    Song selected;
+    private JSlider cInstance; //component being updated
+    private SongManager smInstance;
+    private JList mList;
+    private Song selected;
     
-    public RTUpdater(JSlider c, SongManager sm){
+    public RTUpdater(JSlider c, SongManager sm, JList dp){
         this.cInstance = c;
         this.smInstance = sm;
+        this.mList = dp;
     }
     
     @Override
@@ -28,9 +31,9 @@ public class RTUpdater extends Thread {
             cInstance.setValue((int)smInstance.getDuration());
             System.out.println(""+(int)smInstance.getDuration());
             
-            if((int)smInstance.getDuration() == (int)smInstance.getMaxDuration()) {
-                selected = smInstance.getWorkspace().get(smInstance.getWorkspace().indexOf(selected) + 1);
-                System.out.println("working");
+            if((int)smInstance.getDuration() == (int)smInstance.getMaxDuration()) { //current song ended
+                smInstance.nextSong(mList); //plays next song
+                
             }
         }
     }

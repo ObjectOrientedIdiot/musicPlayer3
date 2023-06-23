@@ -14,11 +14,9 @@ public class Frame extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         smInstance = new SongManager();
-        rtU = new RTUpdater(rDurationSlider,smInstance);
+        rtU = new RTUpdater(rDurationSlider,smInstance,mList);
         rtU.start();
     }
-
-
     
     private void drawSongButtons(){
         String[] songNames = smInstance.getWorkspace().stream()
@@ -54,6 +52,8 @@ public class Frame extends javax.swing.JFrame {
         refreshFile = new javax.swing.JMenuItem();
         jPlaybackOptions = new javax.swing.JMenu();
         playPause = new javax.swing.JMenuItem();
+        nextSong = new javax.swing.JMenuItem();
+        prevSong = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -82,8 +82,8 @@ public class Frame extends javax.swing.JFrame {
         rFrameLayout.setHorizontalGroup(
             rFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, rFrameLayout.createSequentialGroup()
-                .addContainerGap(15, Short.MAX_VALUE)
-                .addComponent(rDurationSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(rDurationSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(rVolume, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -156,6 +156,9 @@ public class Frame extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        topMenu.setRequestFocusEnabled(false);
+        topMenu.setVerifyInputWhenFocusTarget(false);
+
         jFileOptions.setText("File");
 
         setFile.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
@@ -182,12 +185,30 @@ public class Frame extends javax.swing.JFrame {
 
         playPause.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SPACE, 0));
         playPause.setText("Play/Pause");
-        playPause.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                playPauseActionPerformed(evt);
+        playPause.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                playPauseMousePressed(evt);
             }
         });
         jPlaybackOptions.add(playPause);
+
+        nextSong.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_RIGHT, 0));
+        nextSong.setText("Next Song");
+        nextSong.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                nextSongMousePressed(evt);
+            }
+        });
+        jPlaybackOptions.add(nextSong);
+
+        prevSong.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_LEFT, 0));
+        prevSong.setText("Previous Song");
+        prevSong.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                prevSongMousePressed(evt);
+            }
+        });
+        jPlaybackOptions.add(prevSong);
 
         topMenu.add(jPlaybackOptions);
 
@@ -222,10 +243,6 @@ public class Frame extends javax.swing.JFrame {
         drawSongButtons();
     }//GEN-LAST:event_setFileActionPerformed
 
-    private void playPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playPauseActionPerformed
-        smInstance.pauseOrResume(); //BUG. IT RUNS TWICE WHEN YOU HAVE BOTH mLIST AND playPause SELECTED
-    }//GEN-LAST:event_playPauseActionPerformed
-
     private void rVolumeMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rVolumeMouseReleased
         try {
             smInstance.setVolume(rVolume.getValue());
@@ -238,6 +255,12 @@ public class Frame extends javax.swing.JFrame {
     private void mListKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mListKeyReleased
         if(evt.getKeyCode() == KeyEvent.VK_SPACE ) {
             smInstance.pauseOrResume();
+        }
+        if(evt.getKeyCode() == KeyEvent.VK_LEFT ) {
+            smInstance.prevSong(mList);
+        }
+        if(evt.getKeyCode() == KeyEvent.VK_RIGHT) {
+            smInstance.nextSong(mList);
         }
     }//GEN-LAST:event_mListKeyReleased
 
@@ -276,6 +299,18 @@ public class Frame extends javax.swing.JFrame {
         smInstance.refresh();
     }//GEN-LAST:event_refreshFileActionPerformed
 
+    private void playPauseMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_playPauseMousePressed
+        smInstance.pauseOrResume();
+    }//GEN-LAST:event_playPauseMousePressed
+
+    private void nextSongMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nextSongMousePressed
+        smInstance.nextSong(mList);
+    }//GEN-LAST:event_nextSongMousePressed
+
+    private void prevSongMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_prevSongMousePressed
+        smInstance.prevSong(mList);
+    }//GEN-LAST:event_prevSongMousePressed
+
 
     public static void main(String args[]) {
 
@@ -294,7 +329,9 @@ public class Frame extends javax.swing.JFrame {
     private javax.swing.JPanel mFrame;
     private javax.swing.JList<String> mList;
     private javax.swing.JTextField mSearch;
+    private javax.swing.JMenuItem nextSong;
     private javax.swing.JMenuItem playPause;
+    private javax.swing.JMenuItem prevSong;
     private javax.swing.JSlider rDurationSlider;
     private javax.swing.JPanel rFrame;
     private javax.swing.JSlider rVolume;
